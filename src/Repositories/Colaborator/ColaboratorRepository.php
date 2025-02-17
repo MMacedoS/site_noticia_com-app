@@ -202,6 +202,30 @@ class ColaboratorRepository implements IColaboratorRepository {
         }
     }
 
+    public function deleteAll($colaborator){
+        $person = $this->pessoaFisicaRepository->findById($colaborator->pessoa_fisica_id);
+
+        $this->usuarioRepository->delete($person->usuario->id);
+
+        $this->pessoaFisicaRepository->delete($pessoa_fisica->id);
+
+        return $this->delete($colaborator->id);
+    }
+
+    public function delete(int $id){
+        $stmt = $this->conn->prepare(
+            "UPDATE " . self::TABLE . " 
+                SET
+                    ativo = 0
+                WHERE id = :id
+            "
+        );
+
+        $updated = $stmt->execute([':id' => $id]);
+
+        return $updated;
+    }
+
     public function findByColaboratorId(array $data) : ?Colaborador{
         try{
 
