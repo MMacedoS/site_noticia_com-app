@@ -3,13 +3,13 @@
 namespace App\Repositories\Colaborator;
 
 use App\Config\Database;
-use App\Interfaces\Colaborator\IColaboratorRepository;
+use App\Interfaces\Colaborator\IColaboradorRepository;
 use App\Models\Colaborator\Colaborador;
 use App\Repositories\Traits\FindTrait;
 use App\Utils\LoggerHelper;
 
 
-class ColaboratorRepository implements IColaboratorRepository {
+class ColaboradorRepository implements IColaboratorRepository {
 
     const CLASS_NAME = Colaborador::class;
     const TABLE = 'colaborador';
@@ -21,7 +21,7 @@ class ColaboratorRepository implements IColaboratorRepository {
 
     public function __construct(){
         $this->conn = Database::getInstance()->getConnection();
-        $this->model = new Colaborator();
+        $this->model = new Colaborador();
     }
 
     public function allColaborators(array $params = []){
@@ -226,7 +226,7 @@ class ColaboratorRepository implements IColaboratorRepository {
         return $updated;
     }
 
-    public function findByColaboratorId(array $data) : ?Colaborador{
+    public function findByColaboratorId(string $data) : ?Colaborador{
         try{
 
             $conditions = [];
