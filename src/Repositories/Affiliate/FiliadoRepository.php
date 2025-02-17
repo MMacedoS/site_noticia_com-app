@@ -42,6 +42,11 @@ class FiliadoRepository implements IAffiliateRepository{
         $bindings = [];
 
         if(isset($params['name_email'])){
+            $conditions[] = "(pf.nome LIKE :name_email OR pf.email LIKE :name_email)";
+            $bindings[':name_email'] = '%' . $params['name_email'] . '%';
+        }
+
+        if(isset($params['situation']) && $params['situation'] != ''){
             $conditions[] = "ativo = :situation";
             $bindings[':situation'] = $params['situation'];
         }
@@ -59,5 +64,73 @@ class FiliadoRepository implements IAffiliateRepository{
         return $stmt->fetchAll(\PDO::FETCH_CLASS, self::CLASS_NAME);
     }
 
-    
+    public function saveAll(array $data){
+        if(empty($data)){
+            return null;
+        }
+
+        try{
+            $userData = array_merge($data, [
+                'password' => 'sindsmut123'
+            ]);
+
+            $user = $this->usuarioRepository->create($userData);
+
+            $personData = array_merge($data, ['pessoa_fisica_id' => $user->id]);
+            $person = $this->pessoaFisicaRepository->create($personData);
+
+            $affiliateData = array_merge($data, ['pessoa_fisica_id' => $person->id]);
+            $affiliate = $this->create($affiliateData);
+
+            return $affiliate;
+        }catch(\Throwable $th){
+            LoggerHelper::logInfo($th->getMessage());
+            return null;
+        }finally{
+            Database::getInstance()->closeConnection();
+        }
+    }
+
+    public function create(array $params){
+        $findAffiliate = $this->findByAffiliateId($params);
+        if($findAffiliate){
+            return $findAffiliate;
+        }
+
+        $affiliate = $this->model->create($params);
+
+        try{
+            $sql = "INSERT INTO " . self::TABLE . "
+                set
+                    uuid = :uuid,
+                    pessoa_fisica_id = :person_id
+            ";
+
+            $stmt = $this->conn->prepare($sql);
+
+            $stmt->execute([
+                ':uuid' => $affiliate->uuid,
+                ':person_id' =>$affiliate->pessoa_fisica_id
+            ]);
+
+        }catch(\Throwable $th){
+            LoggerHelper::logInfo($th->getMessage());
+            return null;
+        }finally{
+            Database::getInstance()->closeConnection();
+        }
+    }
+
+    public function updateAll(array $data){}
+
+    public function update(array $data, int $id){}
+
+    public function deleteAll($affiliate){}
+
+    public function delete(int $id){}
+
+    public function findByAffiliateId(string $id) : ?Filiado{}
+
+
+
 }
