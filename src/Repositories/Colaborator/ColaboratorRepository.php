@@ -114,9 +114,85 @@ class ColaboratorRepository implements IColaboratorRepository {
 
             $stmt->execute([
                 ':uuid' => $colaborator->uuid,
-                ':sector_id' => $colaborator->sector_id,
-                ':person_id' => $colaborator->person_id
+                ':sector_id' => $colaborator->setor_id,
+                ':person_id' => $colaborator->pessoa_fisica_id
             ]);
+
+        }catch(\Throwable $th){
+            LoggerHelper::logInfo($th->getMessage());
+            return null;
+        }finally{
+            Database::getInstance()->closeConnection();
+        }
+    }
+
+    public function updateAll(array $data){
+        if(empty($data)){
+            return null;
+        }
+
+        try{
+            $user = $this->usuarioRepository->update($data, $data['usuario_id']);
+            if(is_null($user)){
+                return null;
+            }
+
+            $person = $this->pessoaFisicaRepository->update($data, $data['pessoa_fisica_id']);
+            if(is_null($person)){
+                return null;
+            }
+
+            $colaborator = $this->update($data, (int)$data['id']);
+            if(is_null($colaborador)){
+                return null;
+            }
+
+            return $colaborator;
+
+        }catch(\Throwable $th){
+            LoggerHelper::logInfo($th->getMessage());
+            return null;
+        }finally{
+            Database::getInstance()->closeConnection();
+        }
+    }
+
+    public function update(array $data, int $id){
+        $colaborator = $this->findById((int)$id);
+
+        if(is_null($colaborator)){
+            return null;
+        }
+
+        $colaborator = $this->model->update(
+            $data,
+            $colaborator
+        );
+
+        try{
+            $stmt = $this->conn->prepare(
+                "UPDATE " . self::TABLE . " 
+                    set
+                        pessoa_fisica_id = :person_id,
+                        setor_id = :sector_id,
+                        ativo = :active
+                    WHERE id = :id
+                "
+            );
+
+            $updated = $stmt->execute([
+                ':person_id' => $colaborator->pessoa_fisica_id,
+                ':sector_id' => $colaborator->setor_id,
+                ':active' => $colaborator->ativo
+            ]);
+
+            if(is_null($updated)){
+                return null;
+            }
+
+            $updated = $this->findById((int)$id);
+
+            return $updated;
 
         }catch(\Throwable $th){
             LoggerHelper::logInfo($th->getMessage());
