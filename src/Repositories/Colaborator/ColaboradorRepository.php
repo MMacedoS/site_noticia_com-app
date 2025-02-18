@@ -9,7 +9,7 @@ use App\Repositories\Traits\FindTrait;
 use App\Utils\LoggerHelper;
 
 
-class ColaboradorRepository implements IColaboratorRepository {
+class ColaboradorRepository implements IColaboradorRepository {
 
     const CLASS_NAME = Colaborador::class;
     const TABLE = 'colaborador';

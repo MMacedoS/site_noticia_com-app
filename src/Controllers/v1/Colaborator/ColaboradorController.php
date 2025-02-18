@@ -15,7 +15,7 @@ class ColaboradorController extends Controller{
     protected $pessoaFisicaRepository;
 
     public function __construct(
-        IColaboratorRepository $colaboradorRepository,
+        IColaboradorRepository $colaboradorRepository,
         IPessoaFisicaRepository $pessoaFisicaRepository
     ){
         parent::__construct();
