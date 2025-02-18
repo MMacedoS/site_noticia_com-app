@@ -66,10 +66,6 @@ class ColaboradorController extends Controller{
         try{
             $create = $this->colaboradorRepository->saveAll($data);
 
-            if(is_null($create)){
-                return $this->router->view('colaborator/create', []);
-            }
-
             return $this->router->redirect('colaboradores');
         }catch(\Exception $e){
             return $this->router->view('colaborator/create', [
@@ -90,6 +86,48 @@ class ColaboradorController extends Controller{
             'active' => 'cadastro',
             'colaborador' => $colaborador
         ]);
+    }
+
+    public function update(Request $request, $id){
+        $colaborador = $this->colaboradorRepository->findByUuid($id);
+
+        if(!$colaborador){
+            return $this->router->redirect('colaborador');
+        }
+
+        $person = $this->pessoaFisicaRepository->findById($colaborador->pessoa_fisica_id);
+
+        $validator = new Validator($data);
+
+        $rules = [
+            'name' => 'required|min:1|max:100',
+            'email' => 'required|email',
+            'doc' => 'required'
+        ];
+
+        if(!$validator->validate($rules)){
+            return $this->router->view('colaborator/create', [
+                'errors' => $validator->getErrors()
+            ]);
+        }
+
+        $data = $request->getBodyParams();
+        $data['usuario_id'] = $pessoa_fisica->usuario_id;
+        $data['pessoa_fisica_id'] = $pessoa_fisica->id;
+        $data['id'] = $colaborador->id;
+        $data['setor_id'] = $colaborador->setor_id;
+
+        try{
+            $update = $this->colaboradorRepository->updateAll($data);
+
+            return $this->router->redirect('colaboradores');
+        }catch(\Excepiton $e){
+            return $this->router->view('colaborator/edit', [
+                'active' => 'cadastro',
+                'error' => 'Erro ao atualizar o setor: ' . $e->getMessage(),
+                'colaborador' => $colaborador,
+            ]);
+        }
     }
 
 }
