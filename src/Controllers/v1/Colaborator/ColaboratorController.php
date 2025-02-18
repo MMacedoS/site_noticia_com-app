@@ -32,12 +32,44 @@ class ColaboradorController extends Controller{
         $paginator = new Paginator($colaboradores, $perPage, $currentPage);
         $paginatedBoards = $paginator->getPaginatedItems();
 
-        return $this->router->view('/colaborator/index', [
+        return $this->router->view('colaborator/index', [
             'colaboradores' => $paginatedBoards,
             'links' => $paginator->links(),
             'name_email' => $params['name_email'] ?? null,
             'situation' => $params['situation'] ?? null
         ]);
     }
+
+    public function create(Request $request){
+        return $this->router->view('colaborator/create', []);
+    }
+
+    public function store(Request $request){
+        $data = $request->getBodyParams();
+
+        $validator = new Validator($data);
+
+        $rules = [
+            'name' => 'required|min:1|max:100',
+            'email' => 'required|email',
+            'doc' => 'required'
+        ];
+
+        if(!$validator->validate($rules)){
+            return $this->router->view('colaborator/create', [
+                'errors' => $validator->getErrors()
+            ]);
+        }
+
+        $create = $this->colaboradorRepository->saveAll($data);
+
+        if(is_null($create)){
+            return $this->router->view('colaborator/create', []);
+        }
+
+        return $this->router->redirect('colaboradores/');
+    }
+
+    
 
 }
