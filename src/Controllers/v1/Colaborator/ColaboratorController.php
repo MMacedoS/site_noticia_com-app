@@ -41,7 +41,9 @@ class ColaboradorController extends Controller{
     }
 
     public function create(Request $request){
-        return $this->router->view('colaborator/create', []);
+        return $this->router->view('colaborator/create', [
+            'active' => 'cadastro',
+        ]);
     }
 
     public function store(Request $request){
@@ -61,15 +63,33 @@ class ColaboradorController extends Controller{
             ]);
         }
 
-        $create = $this->colaboradorRepository->saveAll($data);
+        try{
+            $create = $this->colaboradorRepository->saveAll($data);
 
-        if(is_null($create)){
-            return $this->router->view('colaborator/create', []);
+            if(is_null($create)){
+                return $this->router->view('colaborator/create', []);
+            }
+
+            return $this->router->redirect('colaboradores');
+        }catch(\Exception $e){
+            return $this->router->view('colaborator/create', [
+                'active' => 'cadastro',
+                'error' => 'Erro ao criar o setor: ' . $e->getMessage(),
+            ]);
         }
-
-        return $this->router->redirect('colaboradores/');
     }
 
-    
+    public function edit(Request $request, $id){
+        $colaborador = $this->colaboradorRepository->findByUuid($id);
+
+        if(!$colaborador){
+            return $this->router->redirect('colaboradores');
+        }
+
+        return $this->router->view('colaborator/edit', [
+            'active' => 'cadastro',
+            'colaborador' => $colaborador
+        ]);
+    }
 
 }
