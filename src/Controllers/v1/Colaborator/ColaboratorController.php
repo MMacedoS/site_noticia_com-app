@@ -70,7 +70,7 @@ class ColaboradorController extends Controller{
         }catch(\Exception $e){
             return $this->router->view('colaborator/create', [
                 'active' => 'cadastro',
-                'error' => 'Erro ao criar o setor: ' . $e->getMessage(),
+                'error' => 'Erro ao criar o colaborador: ' . $e->getMessage(),
             ]);
         }
     }
@@ -124,8 +124,29 @@ class ColaboradorController extends Controller{
         }catch(\Excepiton $e){
             return $this->router->view('colaborator/edit', [
                 'active' => 'cadastro',
-                'error' => 'Erro ao atualizar o setor: ' . $e->getMessage(),
+                'error' => 'Erro ao atualizar o colaborador: ' . $e->getMessage(),
                 'colaborador' => $colaborador,
+            ]);
+        }
+    }
+
+    public function destroy(Request $request, $id){
+        $colaborador = $this->colaboradorRepository->findByUuid($id);
+
+        if(!$colaborador){
+            return $this->router->view('colaborator/index', [
+                'active' => 'cadastro'
+            ]);
+        }
+
+        try{
+            $this->colaboradorRepository->deleteAll($colaborador);
+
+            return $this->router->redirect('colaborador');
+        }catch(\Exception $e){
+            return $this->router->view('colaborator/index', [
+                'active' => 'cadastro',
+                'error' => 'Erro ao excluir o colaborador: ' . $e->getMessage(),
             ]);
         }
     }
