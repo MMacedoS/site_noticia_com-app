@@ -69,14 +69,82 @@ class FiliadoController extends Controller{
         }catch(\Exception $e){
             return $this->router->view('affiliate/create', [ 
                 'active' => 'cadastro',
-                'error' => 'Erro ao criar o colaborador: ' . $e->getMessage()
+                'error' => 'Erro ao criar o filiado: ' . $e->getMessage()
             ]);
         }
     }
 
-    public function edit(Request $request, $id){}
+    public function edit(Request $request, $id){
+        $filiado = $this->filiadoRepository->findByUuid($id);
 
-    public function update(Request $request, $id){}
+        if(!filiado){
+            return $this->router->redirect('filiados');
+        }
 
-    public function destroy(Request $request, $id){}
+        return $this->router->view('affiliate/edit', [
+            'active' => 'cadastro',
+            'filiado' => $filiado
+        ]);
+    }
+
+    public function update(Request $request, $id){
+        $filiado = $this->filiadoRepository->findByUuid($id);
+
+        if(!$filiado){
+            return $this->router->redirect('filiado');
+        }
+
+        $person = $this->pessoaFisicarepository->findById($filiado->pesso_fisica_id);
+
+        $validator = new Validator($data);
+
+        $rules = [
+            'name' => 'required|min:1|max:100',
+            'email' => 'required|email',
+            'doc' => 'required'
+        ];
+
+        if(!validator->validate($rules)){
+            return $this->router->view('affiliate/create', [
+                'errors' => $validator->getErrors()
+            ]);
+        }
+
+        $data = $request->getBodyParams();
+        $data['usuario_id'] = $pessoa_fisica->usuario_id;
+        $data['pessoa_fisica_id'] = $pessoa_fisica->id;
+        $data['id'] = $filiado->id;
+        $data['setor_id'] = $filiado->setor_id;
+
+        try{
+            $update = $this->filiadoRepository->updateAll($data);
+            return $this->router->redirect('filiados');
+        }catch(\Exception $e){
+            return $this->router->view('affiliate/edit', [
+                'active' => 'cadastro',
+                'error' => 'Erro ao atualizar o filiado: ' . $e->getMessage(),
+                'filiado' => $filiado
+            ]);
+        }
+    }
+
+    public function destroy(Request $request, $id){
+        $filiado = $this->filiadoRepository->findByUuid($id);
+
+        if(!$filiado){
+            return $this->router->view('affiliate/index', [
+                'active' => 'cadastro'
+            ]);
+        }
+
+        try{
+            $this->filiadoRepository->deleteAll($filiado);
+            return $this->router->redirect('filiado');
+        }catch(\Exception $e){
+            return $this->router->view('affiliate/index', [
+                'active' => 'cadastro',
+                'error' => 'Erro ao excluir o filiado: ' . $e->getMessage()
+            ]);
+        }
+    }
 }
