@@ -2,8 +2,8 @@
 
 namespace App\Interfaces\Affiliate;
 
-interface IAffiliateRepository{
-    public function allAffiliate(array $params);
+interface IFiliadoRepository{
+    public function allAffiliates(array $params);
 
     public function saveAll(array $params);
 

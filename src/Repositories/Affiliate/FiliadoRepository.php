@@ -3,12 +3,12 @@
 namespace App\Repositories\Affiliate;
 
 use App\Config\Database;
-use App\Interfaces\Affiliate\IAffiliateRepository;
+use App\Interfaces\Affiliate\IFiliadoRepository;
 use App\Models\Affiliate\Filiado;
 use App\Repositories\Traits\FindTrait;
 use App\Utils\LoggerHelper;
 
-class FiliadoRepository implements IAffiliateRepository{
+class FiliadoRepository implements IFiliadoRepository{
 
     const CLASS_NAME = Filiado::class;
     const TABLE = 'filiado';
@@ -22,7 +22,7 @@ class FiliadoRepository implements IAffiliateRepository{
         $this->model = new Filiado;
     }
 
-    public function allAffiliate(array $params = []){
+    public function allAffiliates(array $params = []){
         $sql = "SELECT
                 f.*,(
                     SELECT
