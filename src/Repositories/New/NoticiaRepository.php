@@ -54,6 +54,125 @@ class NoticiaRepository implements INoticiaRepository{
         $stmt->fetchAll(\PDO::FETCH_CLASS, self::CLASS_NAME);
     }
 
-    
+    public function create(array $params){
+        $noticia = $this->model->create($params);
+
+        try{
+
+            $sql = "INSERT INTO " . self::TABLE . "
+                set
+                    uuid = :uuid,
+                    titulo = :titulo,
+                    resumo = :resumo,
+                    noticia = :noticia,
+                    autor = :autor,
+                    fonte = :fonte,
+                    tag = :tag,
+                    ativo = :ativo,
+                    link = :link
+            ";
+
+            $stmt = $this->conn->prepare($sql);
+
+            $create = $stmt->execute([
+                ':uuid' => $noticia->uuid,
+                ':titulo' => $noticia->titulo,
+                ':resumo' => $noticia->resumo,
+                ':noticia' => $noticia->noticia,
+                ':autor' => $noticia->autor,
+                ':fonte' => $noticia->fonte,
+                ':tag' => $noticia->tag,
+                ':ativo' => $noticia->ativo,
+                ':link' => $noticia->link
+            ]);
+
+            if(is_null($create)){
+                return null;
+            }
+
+            $create = $this->findByUuid($create->uuid);
+
+            return $create;
+
+        }catch(\Throwable $th){
+            LoggerHelper::logInfo($th->getMessage());
+            return null;
+        }finally{
+            Database::getInstance()->closeConnection();
+        }
+    }
+
+    public function update(array $params, int $id){
+        $noticia = $this->findById($id);
+
+        if(is_null($noticia)){
+            return null;
+        }
+
+        $noticia = $this->model->update(
+            $params,
+            $noticia
+        );
+
+        try{
+
+            $sql = "UPDATE " . self::TABLE . "
+                set 
+                    titulo = :titulo,
+                    resumo = :resumo,
+                    noticia = :noticia,
+                    autor = :autor,
+                    fonte = :fonte,
+                    tag = :tag,
+                    ativo = :ativo,
+                    link = :link
+                WHERE id = :id
+            ";
+
+            $stmt = $this->conn->prepare($sql);
+
+            $update = $stmt->execute([
+                ':titulo' => $noticia->titulo,
+                ':resumo' => $noticia->resumo,
+                ':noticia' => $noticia->noticia,
+                ':autor' => $noticia->autor,
+                ':fonte' => $noticia->fonte,
+                ':tag' => $noticia->tag,
+                ':ativo' => $noticia->ativo,
+                ':link' => $noticia->link,
+                ':id' => $noticia->id
+            ]);
+
+            if(is_null($update)){
+                return null;
+            }
+
+            $update = $this->findById($id);
+
+            return $update;
+
+        }catch(\Throwable $th){
+            LoggerHelper::logInfo($th->getMessage());
+            return null;
+        }finally{
+            Database::getInstance()->closeConnection();
+        }
+    }
+
+    public function delete(int $id){
+        $stmt = $this->conn->prepare(
+            "UPDATE " . self::TABLE . "
+                set
+                    ativo = 0
+                WHERE id = :id
+            "
+        );
+
+        $update = $stmt->execute([
+            ':id' => $id
+        ]);
+
+        return $update;
+    }
 
 }
