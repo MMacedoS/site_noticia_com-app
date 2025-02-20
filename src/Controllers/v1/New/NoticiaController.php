@@ -25,12 +25,36 @@ class NoticiaController extends Controller{
         $paginatedBoards = $paginator->getPaginatedItems();
 
         return $this->router->view('new/index', [
+            'active' => 'cadastro',
             'noticias' => $paginatedBoards,
             'links' => $paginator->links(),
             'title' => $params['title'],
             'author' => $params['author'],
             'situation' => $params['situation']
         ]);
+    }
+
+    public function create(Request $request){
+        return $this->router->view('new/create', [
+            'active' => 'cadastro'
+        ]);
+    }
+
+    public function store(Request $request){
+        $data = $request->getBodyParams();
+
+        try{
+            $this->noticiaRepository->create($data);
+            return $this->router->view('new/index', [
+                'active' => 'cadastro'
+            ]);
+
+        }catch(\Throwable $th){
+            return $this->router->view('new/create', [
+                'active' => 'cadastro',
+                'error' => 'Erro ao criar a notícia: ' . $e->getMessage()
+            ]);
+        }
     }
 
 }
