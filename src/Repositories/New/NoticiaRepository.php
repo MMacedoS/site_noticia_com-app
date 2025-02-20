@@ -146,9 +146,7 @@ class NoticiaRepository implements INoticiaRepository{
                 return null;
             }
 
-            $update = $this->findById($id);
-
-            return $update;
+            return $this->findById($id);
 
         }catch(\Throwable $th){
             LoggerHelper::logInfo($th->getMessage());
