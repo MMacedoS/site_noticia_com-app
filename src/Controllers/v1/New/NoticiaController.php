@@ -91,4 +91,17 @@ class NoticiaController extends Controller{
         }
     }
 
+    public function destroy(Request $request, $id){
+        try{
+            $this->noticiaRepository->delete($id);
+            return $this->router->redirect('noticias');
+
+        }catch(\Exception $e){
+            return $this->router->view('new/index', [
+                'active' => 'cadastro',
+                'error' => 'Erro ao excluir a notícia: ' . $e->getMessage()
+            ]);
+        }
+    }
+
 }
