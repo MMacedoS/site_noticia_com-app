@@ -49,10 +49,44 @@ class NoticiaController extends Controller{
                 'active' => 'cadastro'
             ]);
 
-        }catch(\Throwable $th){
+        }catch(\Exception $e){
             return $this->router->view('new/create', [
                 'active' => 'cadastro',
                 'error' => 'Erro ao criar a notícia: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function edit(Request $request, $id){
+        $noticia = $this->noticiaRepository->findByUuid($id);
+
+        if(!$noticia){
+            return $this->router->redirect('noticias');
+        }
+
+        return $this->router->view('new/edit', [
+            'active' => 'cadastro',
+            'noticia' => $noticia
+        ]);
+    }
+
+    public function update(Request $request, $id){
+        $noticia = $this->noticiaRepository->findByUuid($id);
+
+        if(!$noticia){
+            return $this->router->redirect('noticias');
+        }
+
+        $data = $request->getBodyParams();
+
+        try{
+            $this->noticiaRepository->update($noticia, $noticia->id);
+            return $this->router->redirect('noticias');
+        }catch(\Exception $e){
+            return $this->router->view('new/edit', [
+                'active' => 'cadastro',
+                'error' => 'Erro ao atualizar a notícia: ' . $e->getMessage(),
+                'noticia' => $noticia
             ]);
         }
     }
