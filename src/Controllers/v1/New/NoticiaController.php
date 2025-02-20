@@ -21,16 +21,16 @@ class NoticiaController extends Controller{
         $noticias = $this->noticiaRepository->allNotices($params);
         $perPage = 10;
         $currentPage = $request->getParam('page') ? (int)$request->getParams('page') : 1;
-        $paginator = new Paginator($noticias, $perPage, $currentPage);
-        $paginatedBoards = $paginator->getPaginatedItems();
+        //$paginator = new Paginator($noticias, $perPage, $currentPage);
+        //$paginatedBoards = $paginator->getPaginatedItems();
 
         return $this->router->view('new/index', [
             'active' => 'cadastro',
-            'noticias' => $paginatedBoards,
-            'links' => $paginator->links(),
-            'title' => $params['title'],
-            'author' => $params['author'],
-            'situation' => $params['situation']
+            'noticias' => $noticias,
+            //'links' => $paginator->links(),
+            'title' => $params['title'] ?? null,
+            'author' => $params['author'] ?? null,
+            'situation' => $params['situation'] ?? null
         ]);
     }
 
@@ -44,10 +44,16 @@ class NoticiaController extends Controller{
         $data = $request->getBodyParams();
 
         try{
-            $this->noticiaRepository->create($data);
-            return $this->router->view('new/index', [
-                'active' => 'cadastro'
-            ]);
+            $create = $this->noticiaRepository->create($data);
+            
+            if(is_null($create)){
+                return $this->router->view('new/create', [
+                    'active' => 'cadastro',
+                    'error' => ''
+                ]);
+            }
+
+            return $this->router->redirect('noticia');
 
         }catch(\Exception $e){
             return $this->router->view('new/create', [

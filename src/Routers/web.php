@@ -39,11 +39,11 @@ $router->create('GET', '/not-found', [$notFoundController, 'index']);
 $router->create('GET', "/dashboard", [$dashboardController, 'index'], null);
 
 //noticias
-$router->create('GET', '/noticias', [$noticiaController, 'index'], $auth);
-$router->create('GET', '/noticias/criar', [$noticiaController, 'create'], $auth);
-$router->create('POST', '/noticias/criar', [$noticiaController, 'store'], $auth);
-$router->create('GET', '/noticias/{id}/editar', [$noticiaController, 'edit'], $auth);
-$router->create('POST', '/noticias/{id}/editar', [$noticiaController, 'update'], $auth);
-$router->create('DELETE', '/noticias/{id}', [$noticiaController, 'destroy'], $auth);
+$router->create('GET', '/noticia', [$noticiaController, 'index'], null);
+$router->create('GET', '/noticia/criar', [$noticiaController, 'create'], null);
+$router->create('POST', '/noticia/criar', [$noticiaController, 'store'], null);
+$router->create('GET', '/noticia/{id}/editar', [$noticiaController, 'edit'], null);
+$router->create('POST', '/noticia/{id}/editar', [$noticiaController, 'update'], null);
+$router->create('DELETE', '/noticia/{id}', [$noticiaController, 'destroy'], null);
 
 return $router;

@@ -47,32 +47,33 @@ class NoticiaRepository implements INoticiaRepository{
             $sql .= " WHERE " . implode(" AND ", $conditions);
         }
 
+        $sql .= " ORDER BY created_at DESC";
+
         $stmt = $this->conn->prepare($sql);
 
         $stmt->execute($bindings);
 
-        $stmt->fetchAll(\PDO::FETCH_CLASS, self::CLASS_NAME);
+        return $stmt->fetchAll(\PDO::FETCH_CLASS, self::CLASS_NAME);  
     }
 
     public function create(array $params){
         $noticia = $this->model->create($params);
 
         try{
-
-            $sql = "INSERT INTO " . self::TABLE . "
-                set
-                    uuid = :uuid,
-                    titulo = :titulo,
-                    resumo = :resumo,
-                    noticia = :noticia,
-                    autor = :autor,
-                    fonte = :fonte,
-                    tag = :tag,
-                    ativo = :ativo,
-                    link = :link
-            ";
-
-            $stmt = $this->conn->prepare($sql);
+            $stmt = $this->conn->prepare(
+                "INSERT INTO " . self::TABLE . "
+                    SET
+                        uuid = :uuid,
+                        titulo = :titulo,
+                        resumo = :resumo,
+                        noticia = :noticia,
+                        autor = :autor,
+                        fonte = :fonte,
+                        tag = :tag,
+                        ativo = :ativo,
+                        link = :link
+                "
+            );
 
             $create = $stmt->execute([
                 ':uuid' => $noticia->uuid,
@@ -86,13 +87,11 @@ class NoticiaRepository implements INoticiaRepository{
                 ':link' => $noticia->link
             ]);
 
-            if(is_null($create)){
+            if(!$create){
                 return null;
             }
 
-            $create = $this->findByUuid($create->uuid);
-
-            return $create;
+            return $this->findByUuid($noticia->uuid);
 
         }catch(\Throwable $th){
             LoggerHelper::logInfo($th->getMessage());

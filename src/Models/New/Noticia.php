@@ -17,7 +17,7 @@ class Noticia {
     public string $fonte;
     public string $tag;
     public string $ativo;
-    public string $link;
+    public $link;
     public $created_at;
     public $updated_at;
 
