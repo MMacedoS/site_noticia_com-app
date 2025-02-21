@@ -21,13 +21,13 @@ class NoticiaController extends Controller{
         $noticias = $this->noticiaRepository->allNotices($params);
         $perPage = 10;
         $currentPage = $request->getParam('page') ? (int)$request->getParams('page') : 1;
-        //$paginator = new Paginator($noticias, $perPage, $currentPage);
-        //$paginatedBoards = $paginator->getPaginatedItems();
+        $paginator = new Paginator($noticias, $perPage, $currentPage);
+        $paginatedBoards = $paginator->getPaginatedItems();
 
         return $this->router->view('new/index', [
             'active' => 'cadastro',
-            'noticias' => $noticias,
-            //'links' => $paginator->links(),
+            'noticias' => $paginatedBoards,
+            'links' => $paginator->links(),
             'title' => $params['title'] ?? null,
             'author' => $params['author'] ?? null,
             'situation' => $params['situation'] ?? null
