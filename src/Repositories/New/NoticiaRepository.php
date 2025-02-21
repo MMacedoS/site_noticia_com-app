@@ -29,12 +29,12 @@ class NoticiaRepository implements INoticiaRepository{
         $bindings = [];
 
         if (isset($params['title'])) {
-            $conditions[] = "titulo = :titulo";
+            $conditions[] = "titulo LIKE :titulo";
             $bindings[':titulo'] = "%" . $params['title'] . "%";
         }
 
         if (isset($params['author'])) {
-            $conditions[] = "autor = :autor";
+            $conditions[] = "autor LIKE :autor";
             $bindings[':autor'] = "%" . $params['author'] . "%";
         }
 
