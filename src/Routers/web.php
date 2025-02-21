@@ -44,6 +44,6 @@ $router->create('GET', '/noticia/criar', [$noticiaController, 'create'], null);
 $router->create('POST', '/noticia/criar', [$noticiaController, 'store'], null);
 $router->create('GET', '/noticia/{id}/editar', [$noticiaController, 'edit'], null);
 $router->create('POST', '/noticia/{id}/editar', [$noticiaController, 'update'], null);
-$router->create('DELETE', '/noticia/{id}', [$noticiaController, 'destroy'], null);
+$router->create('POST', '/noticia/{id}/deletar', [$noticiaController, 'destroy'], null);
 
 return $router;

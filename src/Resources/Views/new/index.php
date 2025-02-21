@@ -19,6 +19,11 @@
         <p><?=$noticia->link ?></p>
         <p><?=$noticia->created_at ?></p>
         <p><?=$noticia->updated_at ?></p>
+
+        <a href="/noticia/<?= $noticia->uuid ?>/editar">editar</a>
+        <form action="/noticia/<?= $noticia->uuid ?>/deletar" method="POST">
+            <button type="submit">excluir</button>
+        </form>
     </div>
 
 <?php

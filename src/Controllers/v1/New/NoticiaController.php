@@ -67,7 +67,7 @@ class NoticiaController extends Controller{
         $noticia = $this->noticiaRepository->findByUuid($id);
 
         if(!$noticia){
-            return $this->router->redirect('noticias');
+            return $this->router->redirect('noticia');
         }
 
         return $this->router->view('new/edit', [
@@ -80,14 +80,17 @@ class NoticiaController extends Controller{
         $noticia = $this->noticiaRepository->findByUuid($id);
 
         if(!$noticia){
-            return $this->router->redirect('noticias');
+            return $this->router->view('new/edit', [
+                'active' => 'cadastro',
+                'noticia' => $noticia
+            ]);
         }
 
         $data = $request->getBodyParams();
 
         try{
-            $this->noticiaRepository->update($noticia, $noticia->id);
-            return $this->router->redirect('noticias');
+            $this->noticiaRepository->update($data, $noticia->id);
+            return $this->router->redirect('noticia');
         }catch(\Exception $e){
             return $this->router->view('new/edit', [
                 'active' => 'cadastro',
@@ -98,9 +101,15 @@ class NoticiaController extends Controller{
     }
 
     public function destroy(Request $request, $id){
+        $noticia = $this->noticiaRepository->findByUuid($id);
+
+        if(!$noticia){
+            return $this->router->redirect('noticia');
+        }
+
         try{
-            $this->noticiaRepository->delete($id);
-            return $this->router->redirect('noticias');
+            $this->noticiaRepository->delete($noticia->id);
+            return $this->router->redirect('noticia');
 
         }catch(\Exception $e){
             return $this->router->view('new/index', [
